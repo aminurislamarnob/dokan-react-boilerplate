@@ -81,7 +81,7 @@ class Assets {
             return;
         }
 
-        $asset = include $asset_file;
+        $asset = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
         $deps  = array_merge( $asset['dependencies'] ?? [], [ 'dokan-react-components' ] );
 
         wp_register_script(
@@ -113,7 +113,7 @@ class Assets {
             return;
         }
 
-        $asset = include $asset_file;
+        $asset = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
         $deps  = array_merge( $asset['dependencies'] ?? [], [ 'dokan-react-components', 'dokan-react-frontend' ] );
 
         wp_register_script(

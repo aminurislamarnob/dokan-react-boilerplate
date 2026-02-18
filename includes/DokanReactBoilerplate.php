@@ -43,7 +43,6 @@ final class DokanReactBoilerplate {
         register_deactivation_hook( DOKAN_REACT_BOILERPLATE_FILE, [ $this, 'deactivate' ] );
 
         add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
-        add_action( 'woocommerce_flush_rewrite_rules', [ $this, 'flush_rewrite_rules' ] );
         add_action( 'rest_api_init', [ $this, 'register_rest_route' ] );
     }
 
@@ -96,13 +95,6 @@ final class DokanReactBoilerplate {
     }
 
     /**
-     * Flush rewrite rules after plugin is activated or woocommerce is activated.
-     */
-    public function flush_rewrite_rules() {
-        flush_rewrite_rules();
-    }
-
-    /**
      * Placeholder for deactivation function.
      */
     public function deactivate() {
@@ -121,7 +113,6 @@ final class DokanReactBoilerplate {
         defined( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET' ) || define( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET', plugins_url( 'assets', DOKAN_REACT_BOILERPLATE_FILE ) );
         defined( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET' ) || define( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET', DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/admin' );
         defined( 'DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET' ) || define( 'DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET', DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/public' );
-
         defined( 'DOKAN_REACT_BOILERPLATE_LOAD_STYLE' ) || define( 'DOKAN_REACT_BOILERPLATE_LOAD_STYLE', true );
         defined( 'DOKAN_REACT_BOILERPLATE_LOAD_SCRIPTS' ) || define( 'DOKAN_REACT_BOILERPLATE_LOAD_SCRIPTS', true );
     }
@@ -202,14 +193,14 @@ final class DokanReactBoilerplate {
         $template_path = $this->get_template_path( $template_name );
 
         if ( ! file_exists( $template_path ) ) {
-            _doing_it_wrong( __FUNCTION__, sprintf( '<code>%s</code> does not exist.', esc_html( $template_path ) ), DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION );
+            _doing_it_wrong( __FUNCTION__, sprintf( '<code>%s</code> does not exist.', esc_html( $template_path ) ), esc_html( DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION ) );
 
             return;
         }
 
         do_action( 'dokan_react_boilerplate_before_template_part', $template_name, $args );
 
-        include $this->get_template_path( $template_name );
+        include $this->get_template_path( $template_name ); // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 
         do_action( 'dokan_react_boilerplate_after_template_part', $template_name, $args );
     }
