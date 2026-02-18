@@ -26,8 +26,6 @@ final class DokanReactBoilerplate {
     /**
      * Holds various class instances
      *
-     * @since 2.6.10
-     *
      * @var array
      */
     private $container = [];
@@ -45,7 +43,6 @@ final class DokanReactBoilerplate {
         register_deactivation_hook( DOKAN_REACT_BOILERPLATE_FILE, [ $this, 'deactivate' ] );
 
         add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
-        add_action( 'woocommerce_flush_rewrite_rules', [ $this, 'flush_rewrite_rules' ] );
         add_action( 'rest_api_init', [ $this, 'register_rest_route' ] );
     }
 
@@ -59,8 +56,8 @@ final class DokanReactBoilerplate {
      */
     public static function init() {
         if ( self::$instance === null ) {
-			self::$instance = new self();
-		}
+            self::$instance = new self();
+        }
 
         return self::$instance;
     }
@@ -68,58 +65,43 @@ final class DokanReactBoilerplate {
     /**
      * Magic getter to bypass referencing objects
      *
-     * @since 2.6.10
-     *
      * @param string $prop
      *
-     * @return Class Instance
+     * @return mixed
      */
     public function __get( $prop ) {
-		if ( array_key_exists( $prop, $this->container ) ) {
+        if ( array_key_exists( $prop, $this->container ) ) {
             return $this->container[ $prop ];
-		}
+        }
     }
 
     /**
-     * Placeholder for activation function
-     *
-     * Nothing is being called here yet.
+     * Placeholder for activation function.
      */
     public function activate() {
-        // Rewrite rules during dokan_react_boilerplate activation
         if ( $this->has_woocommerce() ) {
             $this->flush_rewrite_rules();
         }
     }
 
     /**
-	 * Register plugin REST routes
-	 *
-	 * @return void
-	 */
-	public function register_rest_route() {
-        // Register your REST routes here
-	}
-
-    /**
-     * Flush rewrite rules after dokan_react_boilerplate is activated or woocommerce is activated
+     * Register plugin REST routes.
      *
-     * @since 3.2.8
+     * @return void
      */
-    public function flush_rewrite_rules() {
-        // fix rewrite rules
-        flush_rewrite_rules();
+    public function register_rest_route() {
+        $customers = new REST\CustomersController();
+        $customers->register_routes();
     }
 
     /**
-     * Placeholder for deactivation function
-     *
-     * Nothing being called here yet.
+     * Placeholder for deactivation function.
      */
-    public function deactivate() {     }
+    public function deactivate() {
+    }
 
     /**
-     * Define all constants
+     * Define all constants.
      *
      * @return void
      */
@@ -129,72 +111,44 @@ final class DokanReactBoilerplate {
         defined( 'DOKAN_REACT_BOILERPLATE_INC_DIR' ) || define( 'DOKAN_REACT_BOILERPLATE_INC_DIR', DOKAN_REACT_BOILERPLATE_DIR . '/includes' );
         defined( 'DOKAN_REACT_BOILERPLATE_TEMPLATE_DIR' ) || define( 'DOKAN_REACT_BOILERPLATE_TEMPLATE_DIR', DOKAN_REACT_BOILERPLATE_DIR . '/templates' );
         defined( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET' ) || define( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET', plugins_url( 'assets', DOKAN_REACT_BOILERPLATE_FILE ) );
-        defined( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET' ) || define( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET' , DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/admin' );
-        defined( 'DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET' ) || define( 'DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET' , DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/public' );
-
-        // give a way to turn off loading styles and scripts from parent theme
+        defined( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET' ) || define( 'DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET', DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/admin' );
+        defined( 'DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET' ) || define( 'DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET', DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/public' );
         defined( 'DOKAN_REACT_BOILERPLATE_LOAD_STYLE' ) || define( 'DOKAN_REACT_BOILERPLATE_LOAD_STYLE', true );
         defined( 'DOKAN_REACT_BOILERPLATE_LOAD_SCRIPTS' ) || define( 'DOKAN_REACT_BOILERPLATE_LOAD_SCRIPTS', true );
     }
 
     /**
-     * Load the plugin after WP User Frontend is loaded
+     * Load the plugin after WP User Frontend is loaded.
      *
      * @return void
      */
     public function init_plugin() {
-        $this->includes();
         $this->init_hooks();
 
         do_action( 'dokan_react_boilerplate_loaded' );
     }
 
     /**
-     * Initialize the actions
+     * Initialize the actions.
      *
      * @return void
      */
     public function init_hooks() {
-        // initialize the classes
         add_action( 'init', [ $this, 'init_classes' ], 4 );
-        add_action( 'plugins_loaded', [ $this, 'after_plugins_loaded' ] );
     }
 
     /**
-     * Include all the required files
-     *
-     * @return void
-     */
-    public function includes() {
-        // include_once STUB_PLUGIN_DIR . '/functions.php';
-    }
-
-    /**
-     * Init all the classes
+     * Init all the classes.
      *
      * @return void
      */
     public function init_classes() {
-        $this->container['scripts'] = new Assets();
+        $this->container['scripts']        = new Assets();
+        $this->container['dashboard_menu'] = new DashboardMenu();
     }
 
     /**
-     * Executed after all plugins are loaded
-     *
-     * At this point dokan_react_boilerplate Pro is loaded
-     *
-     * @since 2.8.7
-     *
-     * @return void
-     */
-    public function after_plugins_loaded() {
-        // Initiate background processes and other tasks
-    }
-
-    /**
-     * Check whether woocommerce is installed and active
-     *
-     * @since 2.9.16
+     * Check whether woocommerce is installed and active.
      *
      * @return bool
      */
@@ -203,24 +157,13 @@ final class DokanReactBoilerplate {
     }
 
     /**
-     * Check whether woocommerce is installed
+     * Get the plugin url.
      *
-     * @since 3.2.8
-     *
-     * @return bool
+     * @return string
      */
-    public function is_woocommerce_installed() {
-        return in_array( 'woocommerce/woocommerce.php', array_keys( get_plugins() ), true );
+    public function plugin_url() {
+        return untrailingslashit( plugins_url( '/', DOKAN_REACT_BOILERPLATE_FILE ) );
     }
-
-    /**
-	 * Get the plugin url.
-	 *
-	 * @return string
-	 */
-	public function plugin_url() {
-		return untrailingslashit( plugins_url( '/', DOKAN_REACT_BOILERPLATE_FILE ) );
-	}
 
     /**
      * Get the template file path to require or include.
@@ -236,22 +179,13 @@ final class DokanReactBoilerplate {
 
     /**
      * Get templates passing attributes and including the file.
-     * You can use this method to load php template file by following:
-     * Example-1: welabs_dokan_react_boilerplate()->get_template( 'admin/custom-meta-fields.php' );
-     * Example-2: welabs_dokan_react_boilerplate()->get_template( 'admin/custom-meta-fields.php', [
-			'loop' => $loop,
-			'variation_data' => $variation_data,
-			'variation' => $variation
-		] );
-     * 
-     * @param mixed  $template_name
-     * @param array  $args          (default: array())
-     * @param string $template_path (default: '')
-     * @param string $default_path  (default: '')
+     *
+     * @param mixed $template_name
+     * @param array $args (default: array())
      *
      * @return void
      */
-    function get_template( $template_name, $args = [] ) {
+    public function get_template( $template_name, $args = [] ) {
         if ( $args && is_array( $args ) ) {
             extract( $args ); // phpcs:ignore
         }
@@ -259,14 +193,14 @@ final class DokanReactBoilerplate {
         $template_path = $this->get_template_path( $template_name );
 
         if ( ! file_exists( $template_path ) ) {
-            _doing_it_wrong( __FUNCTION__, sprintf( '<code>%s</code> does not exist.', esc_html( $template_path ) ), DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION );
+            _doing_it_wrong( __FUNCTION__, sprintf( '<code>%s</code> does not exist.', esc_html( $template_path ) ), esc_html( DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION ) );
 
             return;
         }
 
         do_action( 'dokan_react_boilerplate_before_template_part', $template_name, $args );
 
-        include $this->get_template_path( $template_name );
+        include $this->get_template_path( $template_name ); // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 
         do_action( 'dokan_react_boilerplate_after_template_part', $template_name, $args );
     }

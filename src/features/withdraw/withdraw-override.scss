@@ -1,0 +1,4 @@
+/* Hide Dokan's default Balance when our override is shown (dokan-withdraw route) */
+.dokan-withdraw-wrapper.dokan-react-withdraw > div:first-child {
+    display: none;
+}

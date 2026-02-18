@@ -2,83 +2,180 @@
 
 namespace WeLabs\DokanReactBoilerplate;
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+/**
+ * Script and style registration and enqueue.
+ */
 class Assets {
-	/**
-	 * The constructor.
-	 */
-	public function __construct() {
-		add_action( 'init', array( $this, 'register_all_scripts' ), 10 );
 
-		if ( is_admin() ) {
-			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ), 10 );
-		} else {
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_front_scripts' ) );
-		}
-	}
+    /**
+     * The constructor.
+     */
+    public function __construct() {
+        add_action( 'init', [ $this, 'register_all_scripts' ], 10 );
 
-	/**
-	 * Register all Dokan scripts and styles.
-	 *
-	 * @return void
-	 */
-	public function register_all_scripts() {
-		$this->register_styles();
-		$this->register_scripts();
-	}
+        if ( is_admin() ) {
+            add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ], 10 );
+        } else {
+            add_action( 'wp_enqueue_scripts', [ $this, 'register_react_assets' ], 5 );
+            add_action( 'dokan_enqueue_scripts', [ $this, 'enqueue_dashboard_scripts' ], 15 );
+        }
+    }
 
-	/**
-	 * Register scripts.
-	 *
-	 * @param array $scripts
-	 *
-	 * @return void
-	 */
-	public function register_scripts() {
-		$admin_script    = DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET . '/js/script.js';
-		$frontend_script = DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET . '/js/script.js';
+    /**
+     * Register all Dokan scripts and styles.
+     *
+     * @return void
+     */
+    public function register_all_scripts() {
+        $this->register_styles();
+        $this->register_scripts();
+    }
 
-		wp_register_script( 'dokan_react_boilerplate_admin_script', $admin_script, array(), DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION, true );
-		wp_register_script( 'dokan_react_boilerplate_script', $frontend_script, array(), DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION, true );
-	}
+    /**
+     * Register scripts.
+     *
+     * @return void
+     */
+    public function register_scripts() {
+        $admin_script    = DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET . '/js/script.js';
+        $frontend_script = DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET . '/js/script.js';
 
-	/**
-	 * Register styles.
-	 *
-	 * @return void
-	 */
-	public function register_styles() {
-		$admin_style    = DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET . '/css/style.css';
-		$frontend_style = DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET . '/css/style.css';
+        wp_register_script( 'dokan_react_boilerplate_admin_script', $admin_script, [], DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION, true );
+        wp_register_script( 'dokan_react_boilerplate_script', $frontend_script, [], DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION, true );
+    }
 
-		wp_register_style( 'dokan_react_boilerplate_admin_style', $admin_style, array(), DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION );
-		wp_register_style( 'dokan_react_boilerplate_style', $frontend_style, array(), DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION );
-	}
+    /**
+     * Register styles.
+     *
+     * @return void
+     */
+    public function register_styles() {
+        $admin_style    = DOKAN_REACT_BOILERPLATE_PLUGIN_ADMIN_ASSET . '/css/style.css';
+        $frontend_style = DOKAN_REACT_BOILERPLATE_PLUGIN_PUBLIC_ASSET . '/css/style.css';
 
-	/**
-	 * Enqueue admin scripts.
-	 *
-	 * @return void
-	 */
-	public function enqueue_admin_scripts() {
-		wp_enqueue_script( 'dokan_react_boilerplate_admin_script' );
-		wp_localize_script(
-			'dokan_react_boilerplate_admin_script',
-			'Dokan_React_Boilerplate_Admin',
-			array()
-		);
-	}
+        wp_register_style( 'dokan_react_boilerplate_admin_style', $admin_style, [], DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION );
+        wp_register_style( 'dokan_react_boilerplate_style', $frontend_style, [], DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION );
+    }
 
-	/**
-	 * Enqueue front-end scripts.
-	 *
-	 * @return void
-	 */
-	public function enqueue_front_scripts() {
-		wp_enqueue_script( 'dokan_react_boilerplate_script' );
-		wp_localize_script(
-			'dokan_react_boilerplate_script',
-			'Dokan_React_Boilerplate',
-			array()
-		);
-	}
+    /**
+     * Register React-built assets for the vendor dashboard.
+     *
+     * @return void
+     */
+    public function register_react_assets(): void {
+        $this->register_customers_assets();
+        $this->register_withdraw_assets();
+    }
+
+    /**
+     * Register customers script and style.
+     */
+    private function register_customers_assets(): void {
+        $asset_file = DOKAN_REACT_BOILERPLATE_DIR . '/assets/js/customers.asset.php';
+
+        if ( ! file_exists( $asset_file ) ) {
+            return;
+        }
+
+        $asset = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+        $deps  = array_merge( $asset['dependencies'] ?? [], [ 'dokan-react-components' ] );
+
+        wp_register_script(
+            'dokan-react-boilerplate-customers',
+            DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/js/customers.js',
+            $deps,
+            $asset['version'] ?? DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION,
+            true
+        );
+
+        $css_file = DOKAN_REACT_BOILERPLATE_DIR . '/assets/js/customers.css';
+        if ( file_exists( $css_file ) ) {
+            wp_register_style(
+                'dokan-react-boilerplate-customers',
+                DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/js/customers.css',
+                [ 'dokan-react-components' ],
+                $asset['version'] ?? DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION
+            );
+        }
+    }
+
+    /**
+     * Register withdraw Balance override script and style.
+     */
+    private function register_withdraw_assets(): void {
+        $asset_file = DOKAN_REACT_BOILERPLATE_DIR . '/assets/js/withdraw.asset.php';
+
+        if ( ! file_exists( $asset_file ) ) {
+            return;
+        }
+
+        $asset = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+        $deps  = array_merge( $asset['dependencies'] ?? [], [ 'dokan-react-components', 'dokan-react-frontend' ] );
+
+        wp_register_script(
+            'dokan-react-boilerplate-withdraw',
+            DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/js/withdraw.js',
+            $deps,
+            $asset['version'] ?? DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION,
+            true
+        );
+
+        $css_file = DOKAN_REACT_BOILERPLATE_DIR . '/assets/js/withdraw.css';
+        if ( file_exists( $css_file ) ) {
+            wp_register_style(
+                'dokan-react-boilerplate-withdraw',
+                DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/js/withdraw.css',
+                [ 'dokan-react-components' ],
+                $asset['version'] ?? DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION
+            );
+        }
+    }
+
+    /**
+     * Enqueue admin scripts.
+     *
+     * @return void
+     */
+    public function enqueue_admin_scripts() {
+        wp_enqueue_script( 'dokan_react_boilerplate_admin_script' );
+        wp_localize_script(
+            'dokan_react_boilerplate_admin_script',
+            'Dokan_React_Boilerplate_Admin',
+            []
+        );
+    }
+
+    /**
+     * Enqueue vendor dashboard scripts.
+     *
+     * @return void
+     */
+    public function enqueue_dashboard_scripts(): void {
+        if ( ! dokan_is_seller_dashboard() ) {
+            return;
+        }
+
+        if ( wp_style_is( 'dokan-react-boilerplate-customers', 'registered' ) ) {
+            wp_enqueue_style( 'dokan-react-boilerplate-customers' );
+        }
+        wp_enqueue_script( 'dokan-react-boilerplate-customers' );
+
+        if ( wp_style_is( 'dokan-react-boilerplate-withdraw', 'registered' ) ) {
+            wp_enqueue_style( 'dokan-react-boilerplate-withdraw' );
+        }
+        wp_enqueue_script( 'dokan-react-boilerplate-withdraw' );
+
+        wp_localize_script(
+            'dokan-react-boilerplate-customers',
+            'dokanReactBoilerplateCustomers',
+            [
+                'api_namespace' => 'dokan-react-boilerplate/v1',
+                'nonce'         => wp_create_nonce( 'wp_rest' ),
+            ]
+        );
+    }
 }
