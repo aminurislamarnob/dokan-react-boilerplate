@@ -69,6 +69,7 @@ class Assets {
     public function register_react_assets(): void {
         $this->register_customers_assets();
         $this->register_withdraw_assets();
+        $this->register_store_seo_assets();
     }
 
     /**
@@ -150,6 +151,41 @@ class Assets {
     }
 
     /**
+     * Register store-seo override script and style.
+     */
+    private function register_store_seo_assets(): void {
+        $asset_file = DOKAN_REACT_BOILERPLATE_DIR . '/assets/js/store-seo.asset.php';
+
+        if ( ! file_exists( $asset_file ) ) {
+            return;
+        }
+
+        $asset = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+        $deps  = array_merge(
+            $asset['dependencies'] ?? [],
+            [ 'dokan-react-components', 'dokan-pro-store-seo' ]
+        );
+
+        wp_register_script(
+            'dokan-react-boilerplate-store-seo',
+            DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/js/store-seo.js',
+            $deps,
+            $asset['version'] ?? DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION,
+            true
+        );
+
+        $css_file = DOKAN_REACT_BOILERPLATE_DIR . '/assets/js/store-seo.css';
+        if ( file_exists( $css_file ) ) {
+            wp_register_style(
+                'dokan-react-boilerplate-store-seo',
+                DOKAN_REACT_BOILERPLATE_PLUGIN_ASSET . '/js/store-seo.css',
+                [ 'dokan-pro-store-seo' ],
+                $asset['version'] ?? DOKAN_REACT_BOILERPLATE_PLUGIN_VERSION
+            );
+        }
+    }
+
+    /**
      * Enqueue vendor dashboard scripts.
      *
      * @return void
@@ -168,6 +204,13 @@ class Assets {
             wp_enqueue_style( 'dokan-react-boilerplate-withdraw' );
         }
         wp_enqueue_script( 'dokan-react-boilerplate-withdraw' );
+
+        if ( wp_script_is( 'dokan-pro-store-seo', 'registered' ) && wp_style_is( 'dokan-react-boilerplate-store-seo', 'registered' ) ) {
+            wp_enqueue_style( 'dokan-react-boilerplate-store-seo' );
+        }
+        if ( wp_script_is( 'dokan-pro-store-seo', 'registered' ) && wp_script_is( 'dokan-react-boilerplate-store-seo', 'registered' ) ) {
+            wp_enqueue_script( 'dokan-react-boilerplate-store-seo' );
+        }
 
         wp_localize_script(
             'dokan-react-boilerplate-customers',

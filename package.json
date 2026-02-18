@@ -19,6 +19,7 @@
     "@wordpress/hooks": "^4.0.0",
     "@wordpress/i18n": "^5.0.0",
     "@wordpress/plugins": "^7.0.0",
-    "@wordpress/url": "^4.0.0"
+    "@wordpress/url": "^4.0.0",
+    "lucide-react": "^0.546.0"
   }
 }

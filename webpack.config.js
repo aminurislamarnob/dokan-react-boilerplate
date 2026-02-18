@@ -14,6 +14,7 @@ const updatedConfig = {
     entry: {
         customers: './src/features/customers/index.tsx',
         withdraw: './src/features/withdraw/index.tsx',
+        'store-seo': './src/features/store-seo/index.tsx',
     },
     output: {
         ...defaultConfig.output,
