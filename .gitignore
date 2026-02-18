@@ -9,3 +9,7 @@ vendor
 phpcs-report.txt
 .phpunit.result.cache
 *.gitkeep
+assets/js/*.js
+assets/js/*.css
+assets/js/*.php
+assets/js/*.map
