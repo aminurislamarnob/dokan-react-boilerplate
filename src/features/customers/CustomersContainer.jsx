@@ -1,7 +1,6 @@
 import CustomersDataView from './CustomerTable';
-import { RouterProps } from './types';
 
-const CustomersContainer = ( { navigate, location }: RouterProps ) => {
+const CustomersContainer = ( { navigate, location } ) => {
     return (
         <div id="dokan-vendor-customers">
             <CustomersDataView navigate={ navigate } location={ location } />

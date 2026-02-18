@@ -1,27 +1,18 @@
 import { useCallback, useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { Customer } from '../types';
-
-declare global {
-    interface Window {
-        dokanReactBoilerplateCustomers?: {
-            api_namespace: string;
-        };
-    }
-}
 
 const API_BASE = window.dokanReactBoilerplateCustomers?.api_namespace || 'dokan-react-boilerplate/v1';
 
-export function useCustomerById( id: number | null ) {
-    const [ customer, setCustomer ] = useState<Customer | null>( null );
+export function useCustomerById( id ) {
+    const [ customer, setCustomer ] = useState( null );
     const [ isLoading, setIsLoading ] = useState( false );
-    const [ error, setError ] = useState<string | null>( null );
+    const [ error, setError ] = useState( null );
 
-    const fetchCustomer = useCallback( async ( customerId: number ) => {
+    const fetchCustomer = useCallback( async ( customerId ) => {
         setError( null );
         setIsLoading( true );
         try {
-            const data = await apiFetch<Customer>( {
+            const data = await apiFetch( {
                 path: `/${ API_BASE }/customers/${ customerId }`,
             } );
             setCustomer( data );

@@ -1,11 +1,10 @@
 import { __ } from '@wordpress/i18n';
-import { Customer } from './types';
 
 export const TABLE_FIELDS = [
     {
         id: 'customer',
         label: __( 'Customer', 'dokan-react-boilerplate' ),
-        render: ( { item }: { item: Customer } ) => (
+        render: ( { item } ) => (
             <div>
                 <div className="text-sm font-medium">{ item.display_name }</div>
                 <small className="text-xs text-gray-500">{ item.email }</small>
@@ -17,7 +16,7 @@ export const TABLE_FIELDS = [
     {
         id: 'orders',
         label: __( 'Orders', 'dokan-react-boilerplate' ),
-        render: ( { item }: { item: Customer } ) => (
+        render: ( { item } ) => (
             <span>{ item.order_count }</span>
         ),
         enableSorting: false,
@@ -26,8 +25,8 @@ export const TABLE_FIELDS = [
     {
         id: 'total_spent',
         label: __( 'Total Spent', 'dokan-react-boilerplate' ),
-        render: ( { item }: { item: Customer } ) => {
-            const code = ( window as unknown as { dokanFrontend?: { currency?: { code?: string } } } ).dokanFrontend?.currency?.code || 'USD';
+        render: ( { item } ) => {
+            const code = window?.dokanFrontend?.currency?.code || 'USD';
             const formatted = new Intl.NumberFormat( undefined, {
                 style: 'currency',
                 currency: code,
@@ -40,7 +39,7 @@ export const TABLE_FIELDS = [
     {
         id: 'last_order',
         label: __( 'Last Order', 'dokan-react-boilerplate' ),
-        render: ( { item }: { item: Customer } ) =>
+        render: ( { item } ) =>
             item.last_order_at ? (
                 <span>
                     { new Date( item.last_order_at ).toLocaleDateString() }
@@ -51,4 +50,4 @@ export const TABLE_FIELDS = [
         enableSorting: false,
         enableHiding: false,
     },
-] as const;
+];

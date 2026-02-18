@@ -14,35 +14,18 @@ import {
 import { __ } from '@wordpress/i18n';
 import { DokanButton } from '@dokan/components';
 
-export type SeoMeta = {
-    meta_title: string;
-    meta_desc: string;
-    meta_keywords: string;
-    og_title: string;
-    og_desc: string;
-    og_image: string;
-    og_url: string;
-    twitter_title: string;
-    twitter_desc: string;
-    twitter_image: string;
-    twitter_url: string;
-    linkedin_title: string;
-    linkedin_desc: string;
-    linkedin_image: string;
-};
-
 const StoreSeoForm = () => {
     const toast = useToast();
 
-    const [ seoData, setSeoData ] = useState( {} as SeoMeta );
+    const [ seoData, setSeoData ] = useState( {} );
     const [ loading, setLoading ] = useState( true );
     const [ isSaving, setIsSaving ] = useState( false );
 
-    const [ selectedOgImage, setSelectedOgImage ] = useState< string | null >( null );
-    const [ selectedTwitterImage, setSelectedTwitterImage ] = useState< string | null >( null );
-    const [ selectedLinkedinImage, setSelectedLinkedinImage ] = useState< string | null >( null );
+    const [ selectedOgImage, setSelectedOgImage ] = useState( null );
+    const [ selectedTwitterImage, setSelectedTwitterImage ] = useState( null );
+    const [ selectedLinkedinImage, setSelectedLinkedinImage ] = useState( null );
 
-    const mapKeys: Record<string, string> = {
+    const mapKeys = {
         'dokan-seo-meta-title': 'meta_title',
         'dokan-seo-meta-desc': 'meta_desc',
         'dokan-seo-meta-keywords': 'meta_keywords',
@@ -60,13 +43,13 @@ const StoreSeoForm = () => {
     const fetchSeoData = async () => {
         try {
             setLoading( true );
-            const data: Array<{ id: string; value: string; url?: string } > = await apiFetch( {
+            const data = await apiFetch( {
                 path: '/dokan/v2/settings/store_seo',
             } );
             const allowKeys = Object.keys( mapKeys );
             const filteredSeoData = data
                 .filter( ( item ) => allowKeys.includes( item.id ) )
-                .reduce( ( acc: Record<string, string>, item ) => {
+                .reduce( ( acc, item ) => {
                     acc[ mapKeys[ item.id ] ] = item.value ?? '';
                     return acc;
                 }, {} );
@@ -86,7 +69,7 @@ const StoreSeoForm = () => {
                 setSelectedLinkedinImage( linkedinImageItem.url );
             }
 
-            setSeoData( filteredSeoData as SeoMeta );
+            setSeoData( filteredSeoData );
         } catch ( error ) {
             toast( {
                 type: 'error',
@@ -97,7 +80,7 @@ const StoreSeoForm = () => {
         }
     };
 
-    const changeHandler = ( e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> ) => {
+    const changeHandler = ( e ) => {
         const { name, value } = e.target;
         setSeoData( {
             ...seoData,
@@ -109,7 +92,7 @@ const StoreSeoForm = () => {
         fetchSeoData();
     }, [] );
 
-    const saveSeoData = async ( e: React.FormEvent ) => {
+    const saveSeoData = async ( e ) => {
         e.preventDefault();
         const items = Object.entries( seoData ).map( ( [ key, value ] ) => ( {
             id: `dokan-seo-${ key.replace( /_/g, '-' ) }`,
@@ -125,7 +108,7 @@ const StoreSeoForm = () => {
             } );
             toast( {
                 type: 'success',
-                title: __( 'Store SEO data saved successfully', 'dokan-react-boilerplate' ),
+                title: __( 'Store SEO informations saved successfully', 'dokan-react-boilerplate' ),
             } );
         } catch ( error ) {
             toast( {
@@ -137,7 +120,7 @@ const StoreSeoForm = () => {
         }
     };
 
-    const onImageSelect = ( file: { id: number; url: string }, section: string ) => {
+    const onImageSelect = ( file, section ) => {
         const id = String( file.id );
         if ( section === 'twitter' ) {
             setSeoData( { ...seoData, twitter_image: id } );
@@ -153,7 +136,7 @@ const StoreSeoForm = () => {
         setSelectedOgImage( file.url );
     };
 
-    const removeImage = ( section: string ) => {
+    const removeImage = ( section ) => {
         if ( section === 'facebook' ) {
             setSeoData( { ...seoData, og_image: '' } );
             setSelectedOgImage( null );

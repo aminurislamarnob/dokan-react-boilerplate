@@ -8,11 +8,10 @@ import { VisitStore } from '@dokan/components';
 import StoreSeoForm from './components/StoreSeoForm';
 
 domReady( () => {
-    // @ts-ignore
     window.wp.hooks.addFilter(
         'dokan-dashboard-routes',
         'dokan-react-boilerplate-store-seo',
-        ( routes: Array<{ id: string; element?: React.ReactNode; [key: string]: unknown }> ) => {
+        ( routes ) => {
             const index = routes.findIndex( ( r ) => r.id === 'settings-store-seo' );
             if ( index !== -1 ) {
                 routes[ index ] = {

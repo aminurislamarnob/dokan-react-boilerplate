@@ -1,25 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { DokanButton, MediaUploader } from '@dokan/components';
 
-type ImagePreviewProps = {
-    path: string | null;
-    section: string;
-    upload: ( value: unknown, section: string ) => void;
-    action: ( section: string ) => void;
-    label: string;
-};
-
-const ImagePreview = ( {
-    path,
-    section,
-    action,
-    upload,
-    label,
-}: ImagePreviewProps ) => {
+const ImagePreview = ( { path, section, action, upload, label } ) => {
     const handleDelete = () => {
         action( section );
     };
-    const handleUpload = ( value: unknown ) => {
+    const handleUpload = ( value ) => {
         upload( value, section );
     };
 
@@ -37,7 +23,6 @@ const ImagePreview = ( {
                             className="object-contain w-full min-h-16"
                         />
                         <div className="cursor-pointer group-hover:block hidden absolute inset-0 bg-black/40">
-                            { /* eslint-disable-next-line jsx-a11y/click-events-have-key-events */ }
                             <div
                                 role="button"
                                 tabIndex={ 0 }

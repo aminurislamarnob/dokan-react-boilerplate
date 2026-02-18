@@ -12,9 +12,9 @@ const { requestToExternal, requestToHandle } = require(
 const updatedConfig = {
     ...defaultConfig,
     entry: {
-        customers: './src/features/customers/index.tsx',
-        withdraw: './src/features/withdraw/index.tsx',
-        'store-seo': './src/features/store-seo/index.tsx',
+        customers: './src/features/customers/index.jsx',
+        withdraw: './src/features/withdraw/index.jsx',
+        'store-seo': './src/features/store-seo/index.jsx',
     },
     output: {
         ...defaultConfig.output,

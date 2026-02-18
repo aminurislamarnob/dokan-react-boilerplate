@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import { PriceHtml } from '@dokan/components';
 import { Card } from '@getdokan/dokan-ui';
 import { useBalance } from './hooks/useBalance';
-import { useWithdrawSettings } from './hooks/useWithdrawSettings';
 import { useWithdrawRequests } from './hooks/useWithdrawRequests';
 import { useEffect } from '@wordpress/element';
 import { useCurrentUser } from '@dokan/hooks';
@@ -24,7 +23,6 @@ const Loader = () => (
 
 function Balance() {
     const balance = useBalance();
-    const withdrawSettings = useWithdrawSettings();
     const withdrawRequests = useWithdrawRequests( true );
     const currentUser = useCurrentUser();
 
@@ -85,8 +83,7 @@ function Balance() {
                             </span>
                         </div>
                     </div>
-                    { ( window as unknown as { dokanFrontend?: { withdraw?: { isManualWithdrawEnable?: boolean } } } )
-                        ?.dokanFrontend?.withdraw?.isManualWithdrawEnable && (
+                    { window?.dokanFrontend?.withdraw?.isManualWithdrawEnable && (
                         <RequestWithdrawBtnPlaceholder />
                     ) }
                 </div>
@@ -98,10 +95,7 @@ function Balance() {
 function RequestWithdrawBtnPlaceholder() {
     return (
         <a
-            href={
-                ( window as unknown as { dokanFrontend?: { withdraw?: { paymentSettingUrl?: string } } } )
-                    ?.dokanFrontend?.withdraw?.paymentSettingUrl ?? '#'
-            }
+            href={ window?.dokanFrontend?.withdraw?.paymentSettingUrl ?? '#' }
             className="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
             { __( 'Request Withdraw', 'dokan-react-boilerplate' ) }
