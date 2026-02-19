@@ -2,6 +2,9 @@
 Run the following command for development environment.
 ```
 composer install
+npm install
+npm run build
+npm run start
 
 ```
 
