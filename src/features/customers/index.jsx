@@ -5,11 +5,10 @@ import CustomerDetails from './CustomerDetails';
 import './customers.scss';
 
 domReady( () => {
-    // @ts-ignore
     wp.hooks.addFilter(
         'dokan-dashboard-routes',
         'dokan-react-boilerplate-customers',
-        ( routes: Array<Record<string, unknown>> ) => {
+        ( routes ) => {
             routes.push(
                 {
                     id: 'dokan-react-boilerplate-customers',

@@ -1,10 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { RouterProps } from './types';
 import { useCustomerById } from './hooks/useCustomerById';
 import { DokanButton } from '@dokan/components';
 
-const CustomerDetails = ( { params }: RouterProps ) => {
-    const id = params?.id ? parseInt( params.id as string, 10 ) : null;
+const CustomerDetails = ( { params } ) => {
+    const id = params?.id ? parseInt( params.id, 10 ) : null;
     const { customer, isLoading, error, refresh } = useCustomerById( id );
 
     if ( ! id ) {
@@ -76,7 +75,7 @@ const CustomerDetails = ( { params }: RouterProps ) => {
     );
 };
 
-function DetailRow( { label, value }: { label: string; value: string } ) {
+function DetailRow( { label, value } ) {
     return (
         <div className="py-3 flex justify-between items-center">
             <dt className="text-sm font-medium text-gray-500">{ label }</dt>
@@ -85,9 +84,8 @@ function DetailRow( { label, value }: { label: string; value: string } ) {
     );
 }
 
-function formatTotalSpent( amount: number ): string {
-    const code = ( window as unknown as { dokanFrontend?: { currency?: { code?: string } } } )
-        .dokanFrontend?.currency?.code || 'USD';
+function formatTotalSpent( amount ) {
+    const code = window?.dokanFrontend?.currency?.code || 'USD';
     return new Intl.NumberFormat( undefined, {
         style: 'currency',
         currency: code,

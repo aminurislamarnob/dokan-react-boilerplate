@@ -1,24 +1,15 @@
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
-import { Customer, ViewState } from '../types';
 import { __ } from '@wordpress/i18n';
-
-declare global {
-    interface Window {
-        dokanReactBoilerplateCustomers?: {
-            api_namespace: string;
-        };
-    }
-}
 
 const API_BASE = window.dokanReactBoilerplateCustomers?.api_namespace || 'dokan-react-boilerplate/v1';
 
-export function useCustomerData( view: ViewState ) {
-    const [ data, setData ] = useState<Customer[]>( [] );
+export function useCustomerData( view ) {
+    const [ data, setData ] = useState( [] );
     const [ isLoading, setIsLoading ] = useState( true );
     const [ totalItems, setTotalItems ] = useState( 0 );
-    const [ error, setError ] = useState< string | null >( null );
+    const [ error, setError ] = useState( null );
 
     useEffect( () => {
         let cancelled = false;
@@ -28,7 +19,7 @@ export function useCustomerData( view: ViewState ) {
             setIsLoading( true );
 
             try {
-                const queryArgs: Record<string, string | number > = {
+                const queryArgs = {
                     per_page: view.perPage ?? 10,
                     page: view.page ?? 1,
                 };
@@ -39,7 +30,7 @@ export function useCustomerData( view: ViewState ) {
                 const response = await apiFetch( {
                     path: addQueryArgs( `/${ API_BASE }/customers`, queryArgs ),
                     parse: false,
-                } ) as Response;
+                } );
 
                 if ( cancelled ) {
                     return;
@@ -79,5 +70,5 @@ export function useCustomerData( view: ViewState ) {
         isLoading,
         totalItems,
         error,
-    } as const;
+    };
 }
