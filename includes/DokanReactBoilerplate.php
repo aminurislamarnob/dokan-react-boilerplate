@@ -145,6 +145,7 @@ final class DokanReactBoilerplate {
     public function init_classes() {
         $this->container['scripts']        = new Assets();
         $this->container['dashboard_menu'] = new DashboardMenu();
+        $this->container['admin_vendors']  = new AdminVendors();
         if ( class_exists( 'WeDevs\DokanPro\StoreSeo' ) ) {
             $this->container['store_seo'] = new StoreSeo();
         }

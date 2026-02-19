@@ -42,7 +42,6 @@ domReady( () => {
         'dokan-admin-vendors-list-column-fields',
         'dokan-react-boilerplate/admin-vendors-featured-column',
         ( fields, loadingClass, isLoading ) => {
-            const statusIndex = fields.findIndex( ( f ) => f.id === 'status' );
 
             const featuredField = {
                 id: 'featured',
@@ -69,12 +68,32 @@ domReady( () => {
                 },
             };
 
+            const passportField = {
+                id: 'passport_number',
+                label: __( 'Passport Number', 'dokan-react-boilerplate' ),
+                enableSorting: false,
+                render: ( { item } ) => {
+                    if ( isLoading ) {
+                        return (
+                            <span className={ loadingClass }>
+                                { __( 'Loading', 'dokan-react-boilerplate' ) }
+                            </span>
+                        );
+                    }
+
+                    return (
+                        <span>{ item?.passport_number || '—' }</span>
+                    );
+                },
+            };
+
             const updated = [ ...fields ];
 
-            if ( statusIndex !== -1 ) {
-                updated.splice( statusIndex, 0, featuredField );
+            const phoneIndex = updated.findIndex( ( f ) => f.id === 'phone' );
+            if ( phoneIndex !== -1 ) {
+                updated.splice( phoneIndex + 1, 0, passportField, featuredField );
             } else {
-                updated.push( featuredField );
+                updated.push( passportField, featuredField );
             }
 
             return updated;
@@ -83,15 +102,26 @@ domReady( () => {
 
     addFilter(
         'dokan_dokan_admin_vendors_table_dataviews_view',
-        'dokan-react-boilerplate/admin-vendors-featured-view',
+        'dokan-react-boilerplate/admin-vendors-custom-view',
         ( view ) => {
-            if ( view?.fields && ! view.fields.includes( 'featured' ) ) {
-                const statusIndex = view.fields.indexOf( 'status' );
+            if ( ! view?.fields ) {
+                return view;
+            }
 
-                if ( statusIndex !== -1 ) {
-                    view.fields.splice( statusIndex, 0, 'featured' );
+            const newFields = [];
+            if ( ! view.fields.includes( 'passport_number' ) ) {
+                newFields.push( 'passport_number' );
+            }
+            if ( ! view.fields.includes( 'featured' ) ) {
+                newFields.push( 'featured' );
+            }
+
+            if ( newFields.length ) {
+                const phoneIndex = view.fields.indexOf( 'phone' );
+                if ( phoneIndex !== -1 ) {
+                    view.fields.splice( phoneIndex + 1, 0, ...newFields );
                 } else {
-                    view.fields.push( 'featured' );
+                    view.fields.push( ...newFields );
                 }
             }
 
